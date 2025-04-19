@@ -200,16 +200,7 @@ function AdventureScreen({ node, gameState, onSelectChoice }: AdventureScreenPro
                 onClick={() => onSelectChoice(index)}
                 className="choice-option bg-apocalypse-dark border border-apocalypse-light hover:border-apocalypse-yellow rounded-lg p-4 transition-all duration-200 cursor-pointer"
               >
-                <p className="mb-1">{choice.text}</p>
-                <div className="text-xs">
-                  {Object.entries(choice.effects).map(([stat, change]) => (
-                    change !== 0 && (
-                      <span key={stat} className={`${change > 0 ? "text-apocalypse-green" : "text-apocalypse-red"} mr-2`}>
-                        {change > 0 ? `↑ ${stat} (+${change})` : `↓ ${stat} (${change})`}
-                      </span>
-                    )
-                  ))}
-                </div>
+                <p>{choice.text}</p>
               </div>
             ))}
           </div>
