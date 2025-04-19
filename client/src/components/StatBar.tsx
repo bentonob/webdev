@@ -10,7 +10,7 @@ export default function StatBar({ name, emoji, value, color }: StatBarProps) {
     <div className="stat-container">
       <div className="flex justify-between mb-1">
         <span className="text-sm">{name} {emoji}</span>
-        <span className="text-sm">{value}%</span>
+        {/* Removed percentage display for added difficulty */}
       </div>
       <div className="w-full bg-gray-700 rounded-full h-2.5">
         <div 

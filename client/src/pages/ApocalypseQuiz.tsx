@@ -224,7 +224,7 @@ function StatBar({ name, emoji, value, color }: StatBarProps) {
       <div className="flex items-center mb-1">
         <span className="mr-1">{emoji}</span>
         <span className="text-xs">{name}</span>
-        <span className="ml-auto text-xs">{value}%</span>
+        {/* Removed percentage display for added difficulty */}
       </div>
       <div className="bg-gray-800 rounded-full h-2 overflow-hidden">
         <div 
