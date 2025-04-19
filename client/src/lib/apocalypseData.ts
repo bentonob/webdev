@@ -587,17 +587,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Volunteer for the front-line assault team", 
-            effects: { health: -25, morale: 15, supplies: 10, stealth: -15 },
+            effects: { health: -35, morale: -10, supplies: -15, stealth: -25 },
             nextNodeId: "alien_assault" 
           },
           { 
             text: "Offer to be part of the tech analysis team instead", 
-            effects: { health: -5, morale: 5, supplies: 5, stealth: 10 },
+            effects: { health: -10, morale: -15, supplies: -5, stealth: -5 },
             nextNodeId: "alien_tech_team" 
           },
           { 
             text: "Suggest an alternative plan to infiltrate rather than attack", 
-            effects: { health: -15, morale: 10, supplies: -5, stealth: -5 },
+            effects: { health: 25, morale: 20, supplies: 15, stealth: 30 },
             nextNodeId: "alien_infiltration" 
           }
         ],
