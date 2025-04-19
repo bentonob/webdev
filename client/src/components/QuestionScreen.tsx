@@ -8,6 +8,11 @@ interface QuestionScreenProps {
 }
 
 export default function QuestionScreen({ gameState, onSelectChoice }: QuestionScreenProps) {
+  // Make sure currentQuestion exists, otherwise return null
+  if (gameState.currentQuestion >= gameState.questions.length) {
+    return null;
+  }
+  
   const currentQuestion = gameState.questions[gameState.currentQuestion];
   
   return (

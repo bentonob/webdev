@@ -44,31 +44,38 @@ export default function ApocalypseQuiz() {
     
     // Show stat change notification
     setStatChange(effects);
-    setTimeout(() => setStatChange(null), 3000);
+    setTimeout(() => setStatChange(null), 2000);
     
-    // Update game state
-    setGameState(prevState => ({
-      ...prevState,
-      stats: newStats,
-      currentQuestion: prevState.currentQuestion + 1
-    }));
+    // Check if this is the last question
+    const isLastQuestion = gameState.currentQuestion + 1 >= gameState.questions.length;
     
-    // Move to next question or results
-    if (gameState.currentQuestion + 1 >= gameState.questions.length) {
+    if (isLastQuestion) {
       // Calculate results before showing results screen
       const { time, severity } = calculateSurvivalTime(newStats);
       const description = severity === 0 
         ? `You not only survived the ${gameState.apocalypseType.type.toLowerCase()}, but thrived. You established a safe community and became a legend among survivors. The history books (if anyone's still writing them) will remember you.`
         : generateDeathDescription({ ...gameState, stats: newStats }, severity);
       
+      // Update game state with final results and immediately go to results screen
+      setGameState(prevState => ({
+        ...prevState,
+        stats: newStats,
+        currentQuestion: prevState.currentQuestion + 1,
+        survivalTime: time,
+        deathDescription: description
+      }));
+      
+      // Wait for stat change animation to finish before showing results
       setTimeout(() => {
-        setGameState(prevState => ({
-          ...prevState,
-          survivalTime: time,
-          deathDescription: description
-        }));
         setCurrentScreen('results');
-      }, 1000);
+      }, 2000);
+    } else {
+      // Just go to next question
+      setGameState(prevState => ({
+        ...prevState,
+        stats: newStats,
+        currentQuestion: prevState.currentQuestion + 1
+      }));
     }
   };
   
