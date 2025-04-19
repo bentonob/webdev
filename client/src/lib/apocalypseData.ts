@@ -210,31 +210,24 @@ export function generateDeathDescription(gameState: GameState, severity: number)
   }
 }
 
-// Helper to determine survival time
-export function calculateSurvivalTime(stats: Effects): {time: string, severity: number} {
-  const averageStat = (stats.health + stats.morale + stats.supplies + stats.stealth) / 4;
-  
-  if (averageStat >= 80) {
+// Helper to determine survival time based on correct answers
+export function calculateSurvivalTime(stats: Effects, correctAnswers: number = 0, totalNodes: number = 0): {time: string, severity: number} {
+  // If all answers are correct, player survives indefinitely
+  if (correctAnswers === totalNodes && totalNodes > 0) {
     return { 
       time: 'INDEFINITELY',
       severity: 0
     };
-  } else if (averageStat >= 60) {
+  } 
+  // Survival time directly corresponds to number of correct answers
+  else if (correctAnswers > 0) {
     return { 
-      time: '2 YEARS',
-      severity: 1
+      time: `${correctAnswers} YEAR${correctAnswers > 1 ? 'S' : ''}`,
+      severity: Math.max(1, 4 - correctAnswers) // Severity decreases with more correct answers
     };
-  } else if (averageStat >= 40) {
-    return { 
-      time: '6 MONTHS',
-      severity: 2
-    };
-  } else if (averageStat >= 20) {
-    return { 
-      time: '3 WEEKS',
-      severity: 3
-    };
-  } else {
+  } 
+  // No correct answers means you barely survived
+  else {
     return { 
       time: '2 DAYS',
       severity: 4

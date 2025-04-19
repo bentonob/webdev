@@ -14,11 +14,13 @@ export default function ApocalypseQuiz() {
   const [gameState, setGameState] = useState<GameState>(initializeAdventureGame());
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('start');
   const [statChange, setStatChange] = useState<{ [key: string]: number } | null>(null);
+  const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   
   // Reset game when restarting
   const handleStartGame = () => {
     setGameState(initializeAdventureGame());
     setCurrentScreen('apocalypse-reveal');
+    setCorrectAnswers(0);
   };
   
   const handleContinueToAdventure = () => {
@@ -31,6 +33,23 @@ export default function ApocalypseQuiz() {
     return gameState.adventureScenario.nodes[gameState.currentNodeId];
   };
   
+  // Helper function to determine which choice is optimal/correct
+  const getCorrectChoiceIndex = (node: AdventureNode): number => {
+    // Find the choice with the highest positive total effect
+    let bestIndex = 0;
+    let bestScore = -Infinity;
+    
+    node.choices.forEach((choice, index) => {
+      const totalEffect = Object.values(choice.effects).reduce((sum, val) => sum + val, 0);
+      if (totalEffect > bestScore) {
+        bestScore = totalEffect;
+        bestIndex = index;
+      }
+    });
+    
+    return bestIndex;
+  };
+
   const handleChoiceSelection = (choiceIndex: number) => {
     const currentNode = getCurrentNode();
     if (!currentNode) return;
@@ -38,6 +57,15 @@ export default function ApocalypseQuiz() {
     const selectedChoice = currentNode.choices[choiceIndex];
     const effects = selectedChoice.effects;
     const nextNodeId = selectedChoice.nextNodeId;
+    
+    // Check if this was the optimal/correct choice
+    const correctIndex = getCorrectChoiceIndex(currentNode);
+    const isCorrectChoice = choiceIndex === correctIndex;
+    
+    // Update correct answer count if this was the optimal choice
+    if (isCorrectChoice) {
+      setCorrectAnswers(prev => prev + 1);
+    }
     
     // Update stats based on choice
     const newStats = { ...gameState.stats };
@@ -59,8 +87,17 @@ export default function ApocalypseQuiz() {
     
     // Check if this is an end node
     if (nextNode.isEndNode) {
-      // Calculate results for the ending
-      const { time, severity } = calculateSurvivalTime(newStats);
+      // Count total possible choice nodes (excluding the starting node and end node)
+      // This represents the total number of decisions made
+      const totalDecisions = gameState.visitedNodeIds.length - 1; // -1 because we don't count the start node
+      
+      // Calculate results based on number of correct choices
+      const { time, severity } = calculateSurvivalTime(
+        newStats,
+        correctAnswers,
+        totalDecisions
+      );
+      
       const description = severity === 0 
         ? `You not only survived the ${gameState.apocalypseType.type.toLowerCase()}, but thrived. ${nextNode.text}`
         : nextNode.text;
