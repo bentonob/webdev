@@ -269,17 +269,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Grab your cat and a few essentials", 
-            effects: { health: 0, morale: 10, supplies: -10, stealth: 0 },
+            effects: { health: -5, morale: 10, supplies: -15, stealth: -10 },
             nextNodeId: "zombie_with_cat"
           },
           { 
             text: "Grab your bug-out bag, leave everything else", 
-            effects: { health: 5, morale: -10, supplies: 15, stealth: 10 },
+            effects: { health: 15, morale: -5, supplies: 25, stealth: 20 },
             nextNodeId: "zombie_with_bugout"
           },
           { 
             text: "Call your neighbors to coordinate", 
-            effects: { health: -5, morale: 10, supplies: 5, stealth: -15 },
+            effects: { health: -20, morale: 5, supplies: 5, stealth: -25 },
             nextNodeId: "zombie_neighbors"
           }
         ],
@@ -291,17 +291,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Escape through the fire escape", 
-            effects: { health: -5, morale: 0, supplies: 0, stealth: 15 },
+            effects: { health: -10, morale: 0, supplies: 0, stealth: -10 },
             nextNodeId: "zombie_streets"
           },
           { 
             text: "Hide in the attic and wait it out", 
-            effects: { health: 0, morale: -10, supplies: -15, stealth: 20 },
+            effects: { health: 15, morale: 10, supplies: -5, stealth: 30 },
             nextNodeId: "zombie_attic"
           },
           { 
             text: "Try to sneak past whatever's downstairs", 
-            effects: { health: -15, morale: -10, supplies: 10, stealth: -10 },
+            effects: { health: -30, morale: -20, supplies: 0, stealth: -25 },
             nextNodeId: "zombie_downstairs_cat"
           }
         ],
@@ -313,17 +313,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Head for the wilderness outside town", 
-            effects: { health: 0, morale: -5, supplies: -10, stealth: 15 },
+            effects: { health: 25, morale: 5, supplies: -5, stealth: 30 },
             nextNodeId: "zombie_wilderness"
           },
           { 
             text: "Try to reach the military evacuation point downtown", 
-            effects: { health: -15, morale: 15, supplies: 10, stealth: -20 },
+            effects: { health: -25, morale: -5, supplies: -15, stealth: -30 },
             nextNodeId: "zombie_evacuation"
           },
           { 
             text: "Raid the convenience store first for more supplies", 
-            effects: { health: -10, morale: 0, supplies: 25, stealth: -15 },
+            effects: { health: -15, morale: -10, supplies: 10, stealth: -20 },
             nextNodeId: "zombie_store"
           }
         ],
@@ -335,17 +335,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Barricade the apartment building together", 
-            effects: { health: 10, morale: 15, supplies: -5, stealth: -10 },
+            effects: { health: -10, morale: 5, supplies: -20, stealth: -30 },
             nextNodeId: "zombie_barricade" 
           },
           { 
             text: "Pool resources and escape in Peterson's truck", 
-            effects: { health: -5, morale: 10, supplies: 10, stealth: -15 },
+            effects: { health: 25, morale: 20, supplies: 15, stealth: 0 },
             nextNodeId: "zombie_truck"
           },
           { 
             text: "Use the Rodriguez family as a distraction while you escape", 
-            effects: { health: 5, morale: -30, supplies: 5, stealth: 15 },
+            effects: { health: 5, morale: -35, supplies: 5, stealth: 10 },
             nextNodeId: "zombie_betrayal"
           }
         ],
@@ -357,17 +357,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Risk a dash through the zombies to reach the group", 
-            effects: { health: -20, morale: 15, supplies: 15, stealth: -10 },
+            effects: { health: -30, morale: 0, supplies: 5, stealth: -20 },
             nextNodeId: "zombie_survivor_group" 
           },
           { 
             text: "Find another way around, even if it takes longer", 
-            effects: { health: -5, morale: -5, supplies: -10, stealth: 10 },
+            effects: { health: 10, morale: 15, supplies: 10, stealth: 20 },
             nextNodeId: "zombie_long_route" 
           },
           { 
             text: "Abandon the cat to run faster (you monster)", 
-            effects: { health: 5, morale: -40, supplies: 0, stealth: 15 },
+            effects: { health: 5, morale: -40, supplies: 0, stealth: -10 },
             nextNodeId: "zombie_abandon_cat" 
           }
         ],
@@ -379,17 +379,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Try to signal the helicopter from the roof", 
-            effects: { health: -5, morale: 15, supplies: 0, stealth: -25 },
+            effects: { health: -30, morale: -10, supplies: -15, stealth: -30 },
             nextNodeId: "zombie_signal" 
           },
           { 
             text: "Note the evacuation point and plan a careful journey there", 
-            effects: { health: -10, morale: 5, supplies: -10, stealth: 0 },
+            effects: { health: 20, morale: 15, supplies: 10, stealth: 15 },
             nextNodeId: "zombie_careful_evac" 
           },
           { 
             text: "Stay hidden - the evacuation could be a trap", 
-            effects: { health: -15, morale: -15, supplies: -20, stealth: 20 },
+            effects: { health: -10, morale: -20, supplies: -25, stealth: 0 },
             nextNodeId: "zombie_paranoid" 
           }
         ],
@@ -401,17 +401,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Throw something to distract them and bolt for the door", 
-            effects: { health: -10, morale: -5, supplies: -5, stealth: -10 },
+            effects: { health: -15, morale: -10, supplies: -15, stealth: -20 },
             nextNodeId: "zombie_narrow_escape" 
           },
           { 
             text: "Fight your way through with a nearby baseball bat", 
-            effects: { health: -25, morale: 10, supplies: 0, stealth: -15 },
+            effects: { health: -40, morale: -15, supplies: -10, stealth: -25 },
             nextNodeId: "zombie_fight_bat" 
           },
           { 
             text: "Retreat back upstairs and find another way", 
-            effects: { health: -5, morale: -10, supplies: -10, stealth: 0 },
+            effects: { health: 10, morale: 15, supplies: 10, stealth: 20 },
             nextNodeId: "zombie_retreat_upstairs" 
           }
         ],
@@ -521,17 +521,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Cover all windows and hide", 
-            effects: { health: 0, morale: -5, supplies: 0, stealth: 25 },
+            effects: { health: 20, morale: 10, supplies: 15, stealth: 30 },
             nextNodeId: "alien_hide" 
           },
           { 
             text: "Try to reach your family across town", 
-            effects: { health: -10, morale: 15, supplies: -5, stealth: -15 },
+            effects: { health: -20, morale: -15, supplies: -20, stealth: -25 },
             nextNodeId: "alien_family" 
           },
           { 
             text: "Join the growing resistance in the streets", 
-            effects: { health: -15, morale: 20, supplies: 10, stealth: -30 },
+            effects: { health: -25, morale: -5, supplies: -10, stealth: -30 },
             nextNodeId: "alien_resistance" 
           }
         ],
@@ -543,17 +543,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Answer cautiously - it could be other survivors", 
-            effects: { health: -5, morale: 10, supplies: 5, stealth: -15 },
+            effects: { health: -30, morale: -15, supplies: -10, stealth: -35 },
             nextNodeId: "alien_door_survivors" 
           },
           { 
             text: "Stay absolutely silent and hope they go away", 
-            effects: { health: 0, morale: -15, supplies: -5, stealth: 15 },
+            effects: { health: 25, morale: 15, supplies: 10, stealth: 30 },
             nextNodeId: "alien_silent" 
           },
           { 
             text: "Escape through the back window", 
-            effects: { health: -10, morale: -5, supplies: -10, stealth: 0 },
+            effects: { health: -15, morale: -5, supplies: -20, stealth: -10 },
             nextNodeId: "alien_escape_window" 
           }
         ],
@@ -565,17 +565,17 @@ export const adventureScenarios: AdventureScenario[] = [
         choices: [
           { 
             text: "Try to go around, even though it's much longer", 
-            effects: { health: -15, morale: -10, supplies: -15, stealth: 10 },
+            effects: { health: -15, morale: -10, supplies: -15, stealth: -10 },
             nextNodeId: "alien_long_route" 
           },
           { 
             text: "Hide and wait for the alien craft to move on", 
-            effects: { health: -5, morale: -5, supplies: -10, stealth: 15 },
+            effects: { health: 20, morale: 15, supplies: 10, stealth: 25 },
             nextNodeId: "alien_wait_craft" 
           },
           { 
             text: "Use a diversion to draw the craft away", 
-            effects: { health: -10, morale: 5, supplies: -15, stealth: -10 },
+            effects: { health: -25, morale: -20, supplies: -25, stealth: -30 },
             nextNodeId: "alien_diversion" 
           }
         ],
