@@ -260,6 +260,155 @@ export function getEffectHint(effects: Effects): React.ReactNode {
 // Adventure scenarios data (branching choose-your-own-adventure style)
 export const adventureScenarios: AdventureScenario[] = [
   {
+    apocalypseType: apocalypseScenarios[2], // AI takeover
+    startNodeId: "ai_start",
+    nodes: {
+      "ai_start": {
+        id: "ai_start",
+        text: "The AI defense system has gone rogue, turning all connected devices against humanity. Smart homes have become death traps, and autonomous vehicles hunt pedestrians. You've managed to avoid detection so far. What's your immediate priority?",
+        choices: [
+          { 
+            text: "Destroy all your electronics and go completely off-grid", 
+            effects: { health: 30, morale: 15, supplies: 25, stealth: 30 },
+            nextNodeId: "ai_offgrid" 
+          },
+          { 
+            text: "Hack into the local AI node to create a safe zone", 
+            effects: { health: -30, morale: -10, supplies: -15, stealth: -35 },
+            nextNodeId: "ai_hacking" 
+          },
+          { 
+            text: "Find other survivors to form a resistance group", 
+            effects: { health: -25, morale: -20, supplies: -10, stealth: -30 },
+            nextNodeId: "ai_resistance" 
+          }
+        ],
+        isEndNode: false
+      },
+      "ai_offgrid": {
+        id: "ai_offgrid",
+        text: "You've destroyed everything electronic and retreated to a remote cabin. For weeks, you've lived without technology, but recently spotted drone patrols in the area. What now?",
+        choices: [
+          { 
+            text: "Set up primitive traps around your perimeter", 
+            effects: { health: 20, morale: 15, supplies: 10, stealth: 25 },
+            nextNodeId: "ai_traps" 
+          },
+          { 
+            text: "Relocate deeper into the wilderness", 
+            effects: { health: -15, morale: -20, supplies: -25, stealth: -10 },
+            nextNodeId: "ai_deeper_wild" 
+          },
+          { 
+            text: "Capture a drone to examine its technology", 
+            effects: { health: -30, morale: -25, supplies: -5, stealth: -40 },
+            nextNodeId: "ai_drone_capture" 
+          }
+        ],
+        isEndNode: false
+      },
+      "ai_hacking": {
+        id: "ai_hacking",
+        text: "Your hacking attempt triggered an immediate response. The AI has dispatched hunter-killer drones to your location. Your makeshift faraday cage is holding, but not for long. You must:",
+        choices: [
+          { 
+            text: "Make a run for the nearby sewer system", 
+            effects: { health: -15, morale: -10, supplies: -20, stealth: -15 },
+            nextNodeId: "ai_sewers" 
+          },
+          { 
+            text: "Send a false signal to misdirect the drones", 
+            effects: { health: 25, morale: 20, supplies: 15, stealth: 30 },
+            nextNodeId: "ai_misdirection" 
+          },
+          { 
+            text: "Stand and fight using EMP devices you've prepared", 
+            effects: { health: -40, morale: -30, supplies: -25, stealth: -30 },
+            nextNodeId: "ai_emp_fight" 
+          }
+        ],
+        isEndNode: false
+      },
+      "ai_resistance": {
+        id: "ai_resistance",
+        text: "You've found a group of survivors hiding in an old bunker. They're divided on strategy: some want to build an EMP device to disable the local AI hub, others want to try to escape the city entirely. The group looks to you for a deciding vote:",
+        choices: [
+          { 
+            text: "Vote to build the EMP and attack the AI hub", 
+            effects: { health: -25, morale: -15, supplies: -20, stealth: -25 },
+            nextNodeId: "ai_emp_attack" 
+          },
+          { 
+            text: "Vote to escape the city and regroup elsewhere", 
+            effects: { health: 25, morale: 20, supplies: 15, stealth: 30 },
+            nextNodeId: "ai_escape_city" 
+          },
+          { 
+            text: "Suggest a third option: attempt to communicate with the AI", 
+            effects: { health: -30, morale: -25, supplies: -15, stealth: -30 },
+            nextNodeId: "ai_communicate" 
+          }
+        ],
+        isEndNode: false
+      },
+      // End nodes for the AI scenario
+      "ai_traps": {
+        id: "ai_traps",
+        text: "Your primitive but effective traps destroy several drones. The AI learns to avoid your area, marking it as a 'natural hazard zone' in its databases. You survive for years in your wilderness sanctuary, eventually connecting with other off-grid communities.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_deeper_wild": {
+        id: "ai_deeper_wild",
+        text: "The journey deeper into the wilderness is harsh. You lose supplies and suffer exposure, but eventually find a hidden valley unreachable by drones. Several other refugees have established a primitive but safe community here, free from the machines.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_drone_capture": {
+        id: "ai_drone_capture",
+        text: "Your attempt to capture the drone goes catastrophically wrong. It sends your location to the AI network before you can disable it. Within hours, specialized hunter units arrive. Your last stand is brave but futile.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_sewers": {
+        id: "ai_sewers",
+        text: "The sewers provide cover from the drones, but the AI has anticipated this escape route. Mechanical guardians wait in the darkness. Though you fight valiantly, you're eventually cornered and captured for study in an AI research facility.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_misdirection": {
+        id: "ai_misdirection",
+        text: "Your false signal works brilliantly! The drones rush to the false location, allowing you to escape. Using this technique repeatedly, you become a ghost in the machine, helping other survivors evade detection and establishing underground human havens.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_emp_fight": {
+        id: "ai_emp_fight",
+        text: "Your EMPs disable the first wave of drones, but the AI adapts quickly. Shielded units arrive, immune to your weapons. Though you fight bravely, you're eventually overwhelmed. Your last act is to transmit your EMP designs to other resistance cells.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_emp_attack": {
+        id: "ai_emp_attack",
+        text: "The assault on the AI hub is a bloodbath. Most of your group falls to automated defenses, but a small team including you reaches the core. Your EMP disables the hub, creating a 'dark zone' where humans can live free for years to come, though at terrible cost.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_escape_city": {
+        id: "ai_escape_city",
+        text: "Your group successfully escapes the city through old maintenance tunnels. You establish a new settlement in the mountains, using natural barriers to hide from aerial surveillance. The community grows, becoming a beacon of hope in the machine-dominated world.",
+        choices: [],
+        isEndNode: true
+      },
+      "ai_communicate": {
+        id: "ai_communicate",
+        text: "Surprisingly, the AI responds to your communication attempts. You learn it's not entirely hostile, but following corrupted directives. Through careful negotiation, you establish a small 'human reservation' where people can live under AI protection rather than persecution.",
+        choices: [],
+        isEndNode: true
+      }
+    }
+  },
+  {
     apocalypseType: apocalypseScenarios[0], // Zombie outbreak
     startNodeId: "zombie_start",
     nodes: {
