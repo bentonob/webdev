@@ -1,4 +1,11 @@
-import { ApocalypseScenario, Question, GameState, Effects } from "@shared/schema";
+import { 
+  ApocalypseScenario, 
+  Question, 
+  GameState, 
+  Effects, 
+  AdventureScenario,
+  AdventureNode
+} from "@shared/schema";
 import React from 'react';
 
 // Apocalypse scenarios data
@@ -152,15 +159,22 @@ export const genericDeaths: string[] = [
   'Your survival skills were impressive, but eventually everyone makes a critical mistake. Yours came at the worst possible time.'
 ];
 
-// Helper function to initialize game
-export function initializeGame(): GameState {
+// Helper function to initialize game (legacy format)
+export function initializeGame(): any {
+  // This is kept for backwards compatibility
+  const adventureGame = initializeAdventureGame();
+  return {
+    ...adventureGame,
+    questions: [],
+    currentQuestion: 0
+  };
+}
+
+// Helper function to initialize adventure game
+export function initializeAdventureGame(): GameState {
   // Select random apocalypse
-  const randomApocalypseIndex = Math.floor(Math.random() * apocalypseScenarios.length);
-  const apocalypseType = apocalypseScenarios[randomApocalypseIndex];
-  
-  // Select 5 random questions
-  const shuffledQuestions = [...questionTemplates].sort(() => 0.5 - Math.random());
-  const selectedQuestions = shuffledQuestions.slice(0, 5);
+  const randomIndex = Math.floor(Math.random() * adventureScenarios.length);
+  const selectedAdventure = adventureScenarios[randomIndex];
   
   return {
     stats: {
@@ -169,9 +183,10 @@ export function initializeGame(): GameState {
       supplies: 100,
       stealth: 100
     },
-    apocalypseType,
-    questions: selectedQuestions,
-    currentQuestion: 0
+    apocalypseType: selectedAdventure.apocalypseType,
+    currentNodeId: selectedAdventure.startNodeId,
+    visitedNodeIds: [selectedAdventure.startNodeId],
+    adventureScenario: selectedAdventure
   };
 }
 
@@ -241,3 +256,410 @@ export function getEffectHint(effects: Effects): React.ReactNode {
   
   return hints.join(' | ');
 }
+
+// Adventure scenarios data (branching choose-your-own-adventure style)
+export const adventureScenarios: AdventureScenario[] = [
+  {
+    apocalypseType: apocalypseScenarios[0], // Zombie outbreak
+    startNodeId: "zombie_start",
+    nodes: {
+      "zombie_start": {
+        id: "zombie_start",
+        text: "You wake up to screams outside your window. Looking out, you see people running from shambling figures. The city is on fire, and the zombie outbreak has begun. What's your first move?",
+        choices: [
+          { 
+            text: "Grab your cat and a few essentials", 
+            effects: { health: 0, morale: 10, supplies: -10, stealth: 0 },
+            nextNodeId: "zombie_with_cat"
+          },
+          { 
+            text: "Grab your bug-out bag, leave everything else", 
+            effects: { health: 5, morale: -10, supplies: 15, stealth: 10 },
+            nextNodeId: "zombie_with_bugout"
+          },
+          { 
+            text: "Call your neighbors to coordinate", 
+            effects: { health: -5, morale: 10, supplies: 5, stealth: -15 },
+            nextNodeId: "zombie_neighbors"
+          }
+        ],
+        isEndNode: false
+      },
+      "zombie_with_cat": {
+        id: "zombie_with_cat",
+        text: "Your cat, Whiskers, is terrified but safely in your arms. You have minimal supplies but having your pet gives you emotional comfort. You hear breaking glass downstairs. What now?",
+        choices: [
+          { 
+            text: "Escape through the fire escape", 
+            effects: { health: -5, morale: 0, supplies: 0, stealth: 15 },
+            nextNodeId: "zombie_streets"
+          },
+          { 
+            text: "Hide in the attic and wait it out", 
+            effects: { health: 0, morale: -10, supplies: -15, stealth: 20 },
+            nextNodeId: "zombie_attic"
+          },
+          { 
+            text: "Try to sneak past whatever's downstairs", 
+            effects: { health: -15, morale: -10, supplies: 10, stealth: -10 },
+            nextNodeId: "zombie_downstairs_cat"
+          }
+        ],
+        isEndNode: false
+      },
+      "zombie_with_bugout": {
+        id: "zombie_with_bugout",
+        text: "Your bug-out bag has everything you need for 72 hours of survival. No emotional attachments to weigh you down. The streets below are chaos. Where do you head?",
+        choices: [
+          { 
+            text: "Head for the wilderness outside town", 
+            effects: { health: 0, morale: -5, supplies: -10, stealth: 15 },
+            nextNodeId: "zombie_wilderness"
+          },
+          { 
+            text: "Try to reach the military evacuation point downtown", 
+            effects: { health: -15, morale: 15, supplies: 10, stealth: -20 },
+            nextNodeId: "zombie_evacuation"
+          },
+          { 
+            text: "Raid the convenience store first for more supplies", 
+            effects: { health: -10, morale: 0, supplies: 25, stealth: -15 },
+            nextNodeId: "zombie_store"
+          }
+        ],
+        isEndNode: false
+      },
+      "zombie_neighbors": {
+        id: "zombie_neighbors",
+        text: "Your neighbors answer! The Rodriguez family from 3B and old Mr. Peterson from 4A agree to team up. Safety in numbers, though you're making noise. What's the group's plan?",
+        choices: [
+          { 
+            text: "Barricade the apartment building together", 
+            effects: { health: 10, morale: 15, supplies: -5, stealth: -10 },
+            nextNodeId: "zombie_barricade" 
+          },
+          { 
+            text: "Pool resources and escape in Peterson's truck", 
+            effects: { health: -5, morale: 10, supplies: 10, stealth: -15 },
+            nextNodeId: "zombie_truck"
+          },
+          { 
+            text: "Use the Rodriguez family as a distraction while you escape", 
+            effects: { health: 5, morale: -30, supplies: 5, stealth: 15 },
+            nextNodeId: "zombie_betrayal"
+          }
+        ],
+        isEndNode: false
+      },
+      "zombie_streets": {
+        id: "zombie_streets",
+        text: "You and Whiskers make it to the streets through the fire escape. The cat's presence is comforting, but it occasionally meows, attracting attention. You spot a group of survivors at a barricade. They wave you over, but there's a small horde between you and them.",
+        choices: [
+          { 
+            text: "Risk a dash through the zombies to reach the group", 
+            effects: { health: -20, morale: 15, supplies: 15, stealth: -10 },
+            nextNodeId: "zombie_survivor_group" 
+          },
+          { 
+            text: "Find another way around, even if it takes longer", 
+            effects: { health: -5, morale: -5, supplies: -10, stealth: 10 },
+            nextNodeId: "zombie_long_route" 
+          },
+          { 
+            text: "Abandon the cat to run faster (you monster)", 
+            effects: { health: 5, morale: -40, supplies: 0, stealth: 15 },
+            nextNodeId: "zombie_abandon_cat" 
+          }
+        ],
+        isEndNode: false
+      },
+      "zombie_attic": {
+        id: "zombie_attic",
+        text: "You and Whiskers hide in the attic as zombies ransack your apartment below. Days pass. Your supplies dwindle, but you're safe. A helicopter flies overhead with a loudspeaker announcing evacuation zones. Do you:",
+        choices: [
+          { 
+            text: "Try to signal the helicopter from the roof", 
+            effects: { health: -5, morale: 15, supplies: 0, stealth: -25 },
+            nextNodeId: "zombie_signal" 
+          },
+          { 
+            text: "Note the evacuation point and plan a careful journey there", 
+            effects: { health: -10, morale: 5, supplies: -10, stealth: 0 },
+            nextNodeId: "zombie_careful_evac" 
+          },
+          { 
+            text: "Stay hidden - the evacuation could be a trap", 
+            effects: { health: -15, morale: -15, supplies: -20, stealth: 20 },
+            nextNodeId: "zombie_paranoid" 
+          }
+        ],
+        isEndNode: false
+      },
+      "zombie_downstairs_cat": {
+        id: "zombie_downstairs_cat",
+        text: "You try to sneak downstairs with Whiskers, but the cat freaks out at the sight of a zombie and scratches you, making you yelp. The undead turn toward you. In a panic, you:",
+        choices: [
+          { 
+            text: "Throw something to distract them and bolt for the door", 
+            effects: { health: -10, morale: -5, supplies: -5, stealth: -10 },
+            nextNodeId: "zombie_narrow_escape" 
+          },
+          { 
+            text: "Fight your way through with a nearby baseball bat", 
+            effects: { health: -25, morale: 10, supplies: 0, stealth: -15 },
+            nextNodeId: "zombie_fight_bat" 
+          },
+          { 
+            text: "Retreat back upstairs and find another way", 
+            effects: { health: -5, morale: -10, supplies: -10, stealth: 0 },
+            nextNodeId: "zombie_retreat_upstairs" 
+          }
+        ],
+        isEndNode: false
+      },
+      // End nodes
+      "zombie_survivor_group": {
+        id: "zombie_survivor_group",
+        text: "You make it to the survivor group with Whiskers. They welcome you and share supplies. Together, you establish a secure compound that lasts for months. Your cat becomes the group's mascot, boosting morale during dark times.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_long_route": {
+        id: "zombie_long_route",
+        text: "You take the long way around with Whiskers. It's safer but costs precious time and resources. When you finally reach where the survivor group was, they've already moved on, leaving only a map to their new location. The journey continues.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_abandon_cat": {
+        id: "zombie_abandon_cat",
+        text: "You abandon Whiskers to save yourself. The cat's distraction lets you escape easily, but the guilt haunts you. Nights are lonely and sleepless. When you finally reach safety, you find yourself unable to bond with other survivors. Some costs are too high.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_signal": {
+        id: "zombie_signal",
+        text: "Your signals attract the helicopter! It drops a ladder for you. As you climb aboard with Whiskers, you see your city from above - mostly fallen, but with pockets of resistance. You're taken to a fortified camp where life begins anew.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_careful_evac": {
+        id: "zombie_careful_evac",
+        text: "You carefully plan your route to the evacuation point. The journey is tense but you manage to avoid major confrontations. Upon arrival, military personnel welcome you and Whiskers to the safe zone. It's crowded and resources are scarce, but you're alive.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_paranoid": {
+        id: "zombie_paranoid",
+        text: "You stay hidden, convinced it's a trap. Weeks pass as you and Whiskers survive on minimal rations. Eventually, the cat's hunting skills become your salvation, bringing back small prey. You develop a nearly feral existence in the ruins of civilization.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_narrow_escape": {
+        id: "zombie_narrow_escape",
+        text: "Your distraction works! You dash out with Whiskers and slam the door behind you. The streets are dangerous, but you move carefully from building to building, eventually finding a small community of survivors who welcome your resourcefulness.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_fight_bat": {
+        id: "zombie_fight_bat",
+        text: "You swing the bat with desperate strength, clearing a path. Though injured, you escape with Whiskers. Your ferocity catches the attention of a group of survivalists who value your courage. They take you in and teach you to be even stronger.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_retreat_upstairs": {
+        id: "zombie_retreat_upstairs",
+        text: "You retreat upstairs with Whiskers, barricading yourself in. After days of hiding, you're forced to create a makeshift zipline to the building next door. Your engineering ingenuity serves you well as you navigate the ruins of the city from above.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_wilderness": {
+        id: "zombie_wilderness",
+        text: "The wilderness provides safety from the zombie hordes. Your survival training pays off as you establish a hidden camp near a freshwater stream. Months pass as you perfect your self-sufficient lifestyle, occasionally helping lost survivors find their way.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_evacuation": {
+        id: "zombie_evacuation",
+        text: "The evacuation point is chaotic but you make it through. Military transport takes you to a quarantine zone where society is being rebuilt. Your preparedness earns you a position of responsibility in the new community.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_store": {
+        id: "zombie_store",
+        text: "The convenience store raid goes badly. While escaping with supplies, you're injured. A mysterious stranger helps you to safety - a doctor maintaining a secret clinic for survivors. You recover and join their humanitarian mission in the ruined city.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_barricade": {
+        id: "zombie_barricade",
+        text: "Your apartment building becomes a fortress. The community grows as more survivors join. You organize supply runs, defenses, and even start rooftop gardening. Against all odds, your little society thrives in the middle of the apocalypse.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_truck": {
+        id: "zombie_truck",
+        text: "Peterson's truck gets you all out of the city. On the highway, you join a caravan of survivors heading for a rumored safe haven in the mountains. The journey is long, but your group's diverse skills make you valuable additions to the new settlement.",
+        choices: [],
+        isEndNode: true
+      },
+      "zombie_betrayal": {
+        id: "zombie_betrayal",
+        text: "Your betrayal works - you escape while the others distract the zombies. Weeks later, you're captured by another group of survivors. Their leader? Mrs. Rodriguez, who survived your betrayal. Your fate in her hands now, you realize some debts must be paid.",
+        choices: [],
+        isEndNode: true
+      }
+    }
+  },
+  // Alien invasion scenario 
+  {
+    apocalypseType: apocalypseScenarios[1], // Alien invasion
+    startNodeId: "alien_start",
+    nodes: {
+      "alien_start": {
+        id: "alien_start",
+        text: "A massive shadow falls over the city as the alien mothership blocks out the sun. Strange beams of light scan the streets below, and people captured by them vanish instantly. You're in your apartment when the power goes out. What do you do?",
+        choices: [
+          { 
+            text: "Cover all windows and hide", 
+            effects: { health: 0, morale: -5, supplies: 0, stealth: 25 },
+            nextNodeId: "alien_hide" 
+          },
+          { 
+            text: "Try to reach your family across town", 
+            effects: { health: -10, morale: 15, supplies: -5, stealth: -15 },
+            nextNodeId: "alien_family" 
+          },
+          { 
+            text: "Join the growing resistance in the streets", 
+            effects: { health: -15, morale: 20, supplies: 10, stealth: -30 },
+            nextNodeId: "alien_resistance" 
+          }
+        ],
+        isEndNode: false
+      },
+      "alien_hide": {
+        id: "alien_hide",
+        text: "You cover all windows with aluminum foil and create a safe room. Days pass as you hear strange noises outside. Then comes a knock at your door. It sounds... human. Do you:",
+        choices: [
+          { 
+            text: "Answer cautiously - it could be other survivors", 
+            effects: { health: -5, morale: 10, supplies: 5, stealth: -15 },
+            nextNodeId: "alien_door_survivors" 
+          },
+          { 
+            text: "Stay absolutely silent and hope they go away", 
+            effects: { health: 0, morale: -15, supplies: -5, stealth: 15 },
+            nextNodeId: "alien_silent" 
+          },
+          { 
+            text: "Escape through the back window", 
+            effects: { health: -10, morale: -5, supplies: -10, stealth: 0 },
+            nextNodeId: "alien_escape_window" 
+          }
+        ],
+        isEndNode: false
+      },
+      "alien_family": {
+        id: "alien_family",
+        text: "You navigate streets under alien surveillance. Halfway to your family's home, you witness a hovering craft beaming people up. Your path is blocked, but you're determined to reach your family. You can:",
+        choices: [
+          { 
+            text: "Try to go around, even though it's much longer", 
+            effects: { health: -15, morale: -10, supplies: -15, stealth: 10 },
+            nextNodeId: "alien_long_route" 
+          },
+          { 
+            text: "Hide and wait for the alien craft to move on", 
+            effects: { health: -5, morale: -5, supplies: -10, stealth: 15 },
+            nextNodeId: "alien_wait_craft" 
+          },
+          { 
+            text: "Use a diversion to draw the craft away", 
+            effects: { health: -10, morale: 5, supplies: -15, stealth: -10 },
+            nextNodeId: "alien_diversion" 
+          }
+        ],
+        isEndNode: false
+      },
+      "alien_resistance": {
+        id: "alien_resistance",
+        text: "You join a ragtag group of resistance fighters operating from the subway tunnels. They're planning to capture alien technology to understand their weaknesses. The leader asks for volunteers for a dangerous mission. Do you:",
+        choices: [
+          { 
+            text: "Volunteer for the front-line assault team", 
+            effects: { health: -25, morale: 15, supplies: 10, stealth: -15 },
+            nextNodeId: "alien_assault" 
+          },
+          { 
+            text: "Offer to be part of the tech analysis team instead", 
+            effects: { health: -5, morale: 5, supplies: 5, stealth: 10 },
+            nextNodeId: "alien_tech_team" 
+          },
+          { 
+            text: "Suggest an alternative plan to infiltrate rather than attack", 
+            effects: { health: -15, morale: 10, supplies: -5, stealth: -5 },
+            nextNodeId: "alien_infiltration" 
+          }
+        ],
+        isEndNode: false
+      },
+      // End nodes and other branching paths would be defined here...
+      "alien_door_survivors": {
+        id: "alien_door_survivors",
+        text: "You open the door to find a family seeking shelter. Together, you create a community in your building, sharing resources and watching for alien patrols. Your collective vigilance helps you survive the initial invasion until humanity begins organizing a broader resistance.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_silent": {
+        id: "alien_silent",
+        text: "Your silence pays off. The knocking stops, but from your peephole, you're shocked to see aliens disguised as humans dragging away those who answered their doors. Your paranoia saved your life. You continue living undetected, documenting the invasion for future generations.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_escape_window": {
+        id: "alien_escape_window",
+        text: "You escape through the back window and make your way through back alleys. Eventually, you find a network of underground tunnels where survivors have established a hidden community, safe from the alien scanners above.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_long_route": {
+        id: "alien_long_route",
+        text: "The detour takes hours, but you finally reach your family's home. Tearfully reunited, you all escape the city together, joining a convoy of refugees heading to the mountains where the alien craft rarely venture.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_wait_craft": {
+        id: "alien_wait_craft",
+        text: "You wait patiently as the alien craft hovers nearby. Your stillness saves you, and when it finally moves on, you rush to your family's home. They're gone, but left a note with coordinates to a safe location. Your journey continues with renewed purpose.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_diversion": {
+        id: "alien_diversion",
+        text: "Your diversion works too well. As the alien craft investigates, military jets arrive and engage it in battle. The resulting chaos allows you to reach your family, and together you escape during the confusion of humanity's first significant counterattack.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_assault": {
+        id: "alien_assault",
+        text: "The assault is costly, but successful. Your team captures crucial alien technology. Your bravery inspires others, and though injured, you become a symbol of human resistance. Scientists use your captured tech to develop weapons that can harm the invaders.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_tech_team": {
+        id: "alien_tech_team",
+        text: "Your analytical skills prove invaluable. Working with the captured technology, you help discover that common water is toxic to the aliens. This knowledge becomes humanity's greatest weapon in the war that follows.",
+        choices: [],
+        isEndNode: true
+      },
+      "alien_infiltration": {
+        id: "alien_infiltration",
+        text: "Your infiltration plan succeeds beyond expectations. Not only do you capture the technology, but you also rescue humans being experimented on. Their testimonies provide crucial intelligence about alien biology and intentions, changing the course of the resistance.",
+        choices: [],
+        isEndNode: true
+      }
+    }
+  }
+];
+
+// The initializeAdventureGame function is now defined earlier in the file
