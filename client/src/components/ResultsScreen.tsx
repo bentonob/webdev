@@ -10,9 +10,69 @@ export default function ResultsScreen({ gameState, onRestart }: ResultsScreenPro
   const [showNarrative, setShowNarrative] = useState(false);
   const [narrativeText, setNarrativeText] = useState("");
   const [showStats, setShowStats] = useState(true);
+  const [raccoonClicks, setRaccoonClicks] = useState(0);
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [easterEggText, setEasterEggText] = useState("");
+  
+  // Easter egg for clicking raccoon
+  const handleRaccoonClick = () => {
+    setRaccoonClicks(prev => prev + 1);
+    if (raccoonClicks === 4) { // Will become 5 after state update
+      setEasterEggText("Ascended to raccoon heaven. You win.");
+      setShowEasterEgg(true);
+      
+      // Immediately show narrative instead of stats
+      setShowNarrative(true);
+      setShowStats(false);
+      
+      // Play a chime sound effect or visual feedback
+      // We'll use a visual effect with CSS animation
+      const emoji = document.querySelector('.emoji-trigger');
+      if (emoji) {
+        emoji.classList.add('animate-spin');
+        setTimeout(() => {
+          emoji.classList.remove('animate-spin');
+          emoji.classList.add('animate-bounce');
+        }, 1000);
+      }
+    }
+  };
+  
+  // Check if player chose all worst options
+  useEffect(() => {
+    // The worst choices are those with the most negative total impact
+    const allStats = Object.values(gameState.stats);
+    const totalStats = allStats.reduce((sum, stat) => sum + stat, 0);
+    
+    // If all stats are extremely low (below 30 on average), trigger easter egg
+    if (totalStats < 120 && !showEasterEgg) { // 30 average x 4 stats = 120
+      setEasterEggText("You invented a new form of failure.");
+      setShowEasterEgg(true);
+      
+      // Apply some visual effect to show failure in a dramatic way
+      setTimeout(() => {
+        // Add red flashing effect to the screen
+        const container = document.querySelector('.results-container');
+        if (container) {
+          container.classList.add('bg-apocalypse-red', 'animate-failure');
+          
+          // After a while, show the narrative
+          setTimeout(() => {
+            setShowNarrative(true);
+            setShowStats(false);
+          }, 1500);
+        }
+      }, 500);
+    }
+  }, []);
   
   // Narrative text based on survival time
   const generateNarrative = () => {
+    // If Easter egg is triggered, return that instead
+    if (showEasterEgg) {
+      return easterEggText;
+    }
+    
     let narrative = "";
     
     if (gameState.survivalTime === 'INDEFINITELY') {
@@ -45,7 +105,7 @@ export default function ResultsScreen({ gameState, onRestart }: ResultsScreenPro
     }, 50);
     
     return () => clearInterval(typingInterval);
-  }, []);
+  }, [showEasterEgg, easterEggText]);
   
   // Show narrative after delay
   useEffect(() => {
@@ -60,7 +120,7 @@ export default function ResultsScreen({ gameState, onRestart }: ResultsScreenPro
   return (
     <div className="min-h-screen flex-col items-center justify-center p-4 flex animate-fade-in">
       <div className="max-w-3xl mx-auto w-full">
-        <div className="bg-apocalypse-dark border-2 border-apocalypse-red rounded-lg p-6 shadow-lg text-center relative overflow-hidden">
+        <div className="bg-apocalypse-dark border-2 border-apocalypse-red rounded-lg p-6 shadow-lg text-center relative overflow-hidden results-container">
           {/* Normal stats view */}
           <div className={`transition-opacity duration-1000 ${showStats ? 'opacity-100' : 'opacity-0'}`}>
             <h2 className="font-gameFont text-apocalypse-yellow text-lg md:text-2xl mb-2">
@@ -68,7 +128,11 @@ export default function ResultsScreen({ gameState, onRestart }: ResultsScreenPro
             </h2>
             
             <div className="flex justify-center my-6">
-              <div className="text-6xl md:text-8xl animate-pulse-slow">
+              <div 
+                className="text-6xl md:text-8xl animate-pulse-slow cursor-pointer emoji-trigger"
+                onClick={handleRaccoonClick}
+                title={raccoonClicks > 0 ? `Raccoon clicks: ${raccoonClicks}/5` : ""}
+              >
                 {gameState.apocalypseType.emoji}
               </div>
             </div>
@@ -114,7 +178,11 @@ export default function ResultsScreen({ gameState, onRestart }: ResultsScreenPro
             className={`absolute inset-0 bg-apocalypse-dark p-6 flex flex-col items-center justify-center transition-opacity duration-1000 ${showNarrative ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <div className="max-w-2xl">
-              <div className="text-4xl mb-6">
+              <div 
+                className="text-4xl mb-6 cursor-pointer emoji-trigger"
+                onClick={handleRaccoonClick}
+                title={raccoonClicks > 0 ? `Raccoon clicks: ${raccoonClicks}/5` : ""}
+              >
                 {gameState.apocalypseType.emoji}
               </div>
               <p className="text-xl text-apocalypse-light leading-relaxed font-mono mb-8 text-left">

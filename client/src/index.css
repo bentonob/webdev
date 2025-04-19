@@ -98,6 +98,18 @@
     animation: fadeIn 0.5s ease-in;
   }
   
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  .animate-bounce {
+    animation: bounce 1s infinite;
+  }
+  
+  .animate-failure {
+    animation: failure 0.5s ease-in-out 3;
+  }
+  
   @keyframes glitch {
     0% { transform: translate(0); }
     20% { transform: translate(-2px, 2px); }
@@ -110,6 +122,16 @@
   @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
   }
   
   /* Glitch text effect */
