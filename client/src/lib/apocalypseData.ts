@@ -104,8 +104,8 @@ export const questionTemplates: Question[] = [
   }
 ];
 
-// Initial game state
-export const initialGameState: GameState = {
+// Initial game state (legacy format)
+export const initialGameState: any = {
   stats: {
     health: 100,
     morale: 100,
