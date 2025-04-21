@@ -212,8 +212,12 @@ export function generateDeathDescription(gameState: GameState, severity: number)
 
 // Helper to determine survival time based on correct answers
 export function calculateSurvivalTime(stats: Effects, correctAnswers: number = 0, totalNodes: number = 0): {time: string, severity: number} {
-  // If all answers are correct, player survives indefinitely
-  if (correctAnswers === totalNodes && totalNodes > 0) {
+  // Each adventure has exactly 5 questions (3 choice nodes + start + end node)
+  // To survive indefinitely, ALL 3 choice nodes must be answered correctly
+  const TOTAL_QUESTIONS = 3; // There are 3 choice nodes in each adventure path
+  
+  // If all answers are correct (must be exactly 3 correct out of 3 questions)
+  if (correctAnswers === TOTAL_QUESTIONS) {
     return { 
       time: 'INDEFINITELY',
       severity: 0

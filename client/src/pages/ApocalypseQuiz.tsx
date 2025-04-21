@@ -87,15 +87,12 @@ export default function ApocalypseQuiz() {
     
     // Check if this is an end node
     if (nextNode.isEndNode) {
-      // Count total possible choice nodes (excluding the starting node and end node)
-      // This represents the total number of decisions made
-      const totalDecisions = gameState.visitedNodeIds.length - 1; // -1 because we don't count the start node
-      
-      // Calculate results based on number of correct choices
+      // Use the updated survival time calculation that requires EXACTLY 3 correct answers
+      // to survive indefinitely (fixed number of questions regardless of path)
       const { time, severity } = calculateSurvivalTime(
         newStats,
         correctAnswers,
-        totalDecisions
+        3 // Always 3 questions total in each scenario
       );
       
       const description = severity === 0 
